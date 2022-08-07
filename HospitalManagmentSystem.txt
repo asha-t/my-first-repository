@@ -1,0 +1,191 @@
+﻿import sys; 
+import sqlite3; 
+import re 
+conn=sqlite3.connect("test2.db") 
+cur=conn.cursor() 
+class Address: 
+def __init__(self,addressline,city,zipcode,state): 
+self.__addressline=addressline 
+self.__city=city 
+self.__zipcode=zipcode 
+self.__state=state 
+def getaddressid(self): 
+return self.__addressid 
+def getaddressline(self): 
+return self.__addressline 
+def getcity(self): 
+return self.__city 
+def getzipcode(self): 
+return self.__zipcode 
+def getstate(self): 
+return self.__state 
+def setaddressline(self, value):
+self.__addressline = value 
+def setcity(self, value): 
+self.__city = value 
+def setzipcode(self, value): 
+self.__zipcode = value 
+def setstate(self, value): 
+self.__state = value 
+def vadidatezipcode(self): 
+if(len(self.__zipcode)==6): 
+return True 
+else: 
+print("Enter valid zipcode") 
+return False 
+class Person: 
+def __init__(self,name,telephoneno,email,ptype): 
+self.__name=name 
+self.__telephoneno=telephoneno 
+self.__email=email 
+self.__persontype=ptype 
+def getname(self): 
+return self.__name 
+def gettelephoneno(self): 
+return self.__telephoneno 
+def getemail(self): 
+return self.__email 
+def setname(self, value): 
+self.__name = value 
+def settelephoneno(self, value): 
+self.__telephoneno = value 
+def setemail(self, value): 
+self.__email = value 
+def getpersontype(self): 
+return self.__persontype 
+def setpersontype(self,value): 
+self.__persontype=value 
+def validatetelephoneno(self): 
+if(len(self.__telephoneno)==12 and self.__telephoneno.startswith('91')): return True 
+else: 
+print("Enter a valid telephone number")
+return False 
+class Patient(Person): 
+def __init__(self,name,telephoneno,email,ptype,pno): 
+self.__pno=pno 
+super(Patient, self).__init__(name,telephoneno,email,ptype) 
+def getpno(self): 
+return self.__pno 
+def setpno(self, value): 
+self.__pno = value 
+def displayPatientinfo(self): 
+print('PatientNo:',self.__pno) 
+class Doctor(Person): 
+def __init__(self,name,telephoneno,email,ptype,did,dept,desig,basic): self.__did=did 
+self.__dept=dept 
+self.__desig=desig 
+self.__basic=basic 
+super(Doctor, self).__init__(name,telephoneno,email,ptype) # calling base class constructor 
+def getdid(self): 
+return self.__did 
+def getdept(self): 
+return self.__dept 
+def getdesig(self): 
+return self.__desig 
+def getbasic(self): 
+return self.__basic 
+def setdid(self, value): 
+self.__did = value 
+def setdept(self, value): 
+self.__dept = value 
+def setdesig(self, value): 
+self.__desig = value 
+def setbasic(self, value): 
+self.__basic = value 
+def calculatesal(self): 
+self.__sal=self.__basic+self.__basic*0.5+self.__basic*0.1-self.__basic*0.15 def displayDoctorinfo(self):
+print('Salary:',self.__sal) 
+class Demo1: 
+n=0 
+ch='n' 
+def personoptions(self): 
+print("******************************") 
+print(" Hospital Management System") 
+print("******************************") 
+print("1. Add New Patient") 
+print("2. View All Patient Details") 
+print("3. View All Doctor Details") 
+print("4. Exit") 
+n=int(input("Select your choice")) 
+if n==1: 
+self.insertrecord() 
+elif n==2: 
+self.viewallPatient() 
+elif n==3: 
+self.viewallDoctor() 
+elif n==4: 
+print("Thank You!!!") 
+sys.exit 
+def insertrecord(self): 
+try: 
+conn.execute('''drop table Patient;''') 
+conn.execute('''drop table Doctor;''') 
+conn.execute('''drop table Address;''') 
+conn.execute('''CREATE TABLE Patient(NAME TEXT NOT NULL,telephoneno INT NOT NULL,email text NOT NULL,pno int);'‘’) 
+conn.execute('''CREATE TABLE Doctor(NAME TEXT NOT NULL,telephoneno INT NOT NULL,email text NOT NULL,did int,desig text,basic real, sal real);'‘’) 
+conn.execute('''CREATE TABLE Address(addressline text NOT NULL,city TEXT NOT NULL,dept TEXT,zipcode INT NOT NULL,state text, Patientid int);''') 
+pname=input("Enter Name") 
+ptelephone = input("Enter Telephone No.") 
+pemail=input("Enter Email id") 
+ptype=input("Enter person type (Patient/Doctor)") 
+pobj=Person(pname,ptelephone,pemail,ptype) 
+cur.execute("select count(*) from Address") 
+for n in cur.fetchall(): 
+addrrows=n[0] 
+addobj=Address(None,None,None,None) 
+addobj.setaddressline(input("Enter AddressLine")) 
+addobj.setcity(input("Enter your City"))
+addobj.setzipcode(input("Enter your zipcode")) 
+addobj.setstate(input("Enter your state")) 
+if(pobj.validatetelephoneno()): 
+if(pobj.getpersontype() =="Patient"): 
+pno=input("Enter Patient no") 
+pobj=Patient(pname,ptelephone,pemail,ptype,pno) 
+if(addobj.vadidatezipcode()): 
+conn.execute("insert into address 
+values(?,?,?,?,?)",(addobj.getaddressline(),addobj.getcity(),addobj 
+.getzipcode(),addobj.getstate(),pno)) 
+else: 
+print("Invalid Zipcode") 
+#insert record in Patient table 
+conn.execute("""insert into Patient(name,telephoneno,email,pno) values (?,?,?,?)""",(pobj.getname(),pobj.gettelephoneno(),pobj.getemail(),pobj.getpno())) 
+pobj.displayPatientinfo() 
+elif(pobj.getpersontype()=="Doctor"): 
+did=input("EnterDoctor ID ") 
+dept=input("Enter Department") 
+des=(input("Enter Designation")) 
+basic=int(input("Enter Basic Pay")) 
+pobj=Doctor(pname,ptelephone,pemail,ptype,did,dept,des,basic) 
+pobj.calculatesal() 
+pobj=Doctor(pname,ptelephone,pemail,ptype,did,dept,des,basic) 
+pobj.calculatesal() 
+if(addobj.vadidatezipcode()): 
+conn.execute("insert into address 
+values(?,?,?,?,?)",(addobj.getaddressline(),addobj.getcity(),addobj.getzipcode(), addobj.getstate(),did)) 
+Else: 
+print("Invalid Zipcode") 
+#insert record in Patient table 
+conn.execute("""insert into Doctor(name,telephoneno,email,did,dept,desig,basic,sal) values (?,?,?,?,?,?,?,?)""",(pobj.getname(),pobj.gettelephoneno(),pobj.getemail(),pobj.getdid(),pobj .getdept(),pobj.getdesig(),pobj.getbasic(),pobj.calculatesal())) 
+pobj.displayDoctorinfo() 
+else: 
+print("Invalid Telephone No.") 
+Demo1.gotooptions(self) 
+except sqlite3.DatabaseError as e: 
+print("Error details: ",e)
+finally: 
+conn.commit() 
+def viewallPatient(self): 
+cur.execute("select * from Patient") 
+for n in cur.fetchall(): 
+print(n) 
+def viewallDoctor(self): 
+cur.execute("select * from Doctor") 
+for n in cur.fetchall(): 
+print(n) 
+def gotooptions(self): 
+ch=input("Do you wish to continue(y/n)") 
+if(ch=='y' or ch=='Y'): 
+Demo1.personoptions(self) 
+obj = Demo1() 
+obj.personoptions() 
+obj.gotooptions()
